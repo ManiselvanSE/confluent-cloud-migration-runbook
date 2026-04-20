@@ -3694,4 +3694,4 @@ kafka-acls --add --allow-principal User:<consumer-sa> --operation READ --group a
 
 **END OF ENTERPRISE GUIDE**
 
-*This guide is a simplified, restructured interpretation of the original runbook, tailored for enterprise stakeholders at varying technical levels. For detailed command examples and comprehensive troubleshooting, refer to the [original runbook](https://github.com/ManiselvanSE/confluent-migration-runbook).*
+*This guide is a simplified, restructured interpretation of the original runbook, tailored for enterprise stakeholders at varying technical levels. For detailed command examples and comprehensive troubleshooting, refer to the [technical runbook](https://github.com/ManiselvanSE/confluent-cloud-migration-runbook).*
