@@ -1,0 +1,50 @@
+# Sensitive files - never commit actual credentials
+*.properties
+*-client.properties
+client.config
+*.config
+*.key
+*.secret
+*.pem
+
+# API keys and credentials
+.env
+.env.*
+credentials.json
+api-keys.txt
+secrets/
+
+# Backup and temporary files
+*.backup
+*.bak
+*.tmp
+*-backup.json
+
+# Exported data
+*-export.txt
+*-export.json
+acls-export.txt
+consumer-group-*.txt
+connector-*.json
+topic-config-*.json
+
+# Logs
+*.log
+logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Output files from scripts
+divergent-messages.txt
+source-offsets-*.txt
+dest-offsets-*.txt
+topics-inventory.txt
