@@ -1,10 +1,111 @@
-# Confluent Cloud Migration Runbook
+# Confluent Cloud Migration: Single-AZ to Multi-AZ
+## Complete Migration Guide Using Cluster Linking
 
-A comprehensive, production-grade technical runbook for migrating from a **Single-Zone Confluent Cloud Dedicated** cluster to a **Multi-Zone Confluent Cloud Enterprise** cluster using **Cluster Linking**.
+A comprehensive guide for migrating from **Single-Zone Confluent Cloud Dedicated** to **Multi-Zone Enterprise** clusters using Cluster Linking, with near-zero downtime and zero data loss.
+
+---
+
+## 📚 Repository Contents
+
+This repository contains **two complementary documents** designed for different audiences:
+
+### 📘 **Technical Runbook** - For Implementation Teams
+**File**: [`confluent-migration-runbook.md`](confluent-migration-runbook.md)
+
+**Purpose**: Detailed, command-level execution guide for hands-on migration
+
+**Target Audience**:
+- 👨‍🔧 DevOps Engineers
+- 🔧 Site Reliability Engineers (SREs)
+- 👨‍💻 Platform Engineers
+- 🚨 Implementation Consultants
+
+**Structure**: Chronological by migration phase (10 sections)
+
+**What It Contains**:
+- Step-by-step CLI commands (Confluent CLI, Kafka CLI)
+- Complete configuration files
+- Validation scripts after each step
+- Troubleshooting procedures with root causes
+- Rollback scripts and emergency procedures
+- Command reference appendices
+
+**Use When**: Executing the migration hands-on, operational reference
+
+---
+
+### 📗 **Enterprise Guide** - For Planning & Architecture
+**File**: [`ENTERPRISE-GUIDE.md`](ENTERPRISE-GUIDE.md)
+
+**Purpose**: Simplified, role-based explanation for business and technical stakeholders
+
+**Target Audience**:
+- 👨‍💼 Executives & Decision-Makers
+- 👨‍💻 Solution Engineers (Pre-Sales)
+- 🏗️ Solution Architects
+- 📊 Product Managers
+
+**Structure**: Organized by role/perspective (7 sections)
+
+**What It Contains**:
+- Executive summary and business case
+- Solution engineer view (customer demos, objection handling)
+- Solution architect view (design considerations, networking)
+- Implementation consultant view (high-level execution approach)
+- Data flow explanations
+- Troubleshooting guide (common issues)
+- Best practices
+
+**Use When**: Planning, demos, architecture design, executive briefings
+
+---
+
+## 🎯 Quick Selection Guide
+
+**Which document should I read?**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│           CHOOSE YOUR DOCUMENT BY ROLE                       │
+└─────────────────────────────────────────────────────────────┘
+
+IF YOU ARE...                          THEN START WITH...
+────────────────────────────────────────────────────────────────
+👨‍💼 Executive / Decision-Maker         ➜ Enterprise Guide (Section 1)
+👨‍💻 Solution Engineer (Sales/SE)       ➜ Enterprise Guide (Section 2)
+🏗️ Solution Architect                  ➜ Enterprise Guide (Section 3)
+👨‍🔧 Implementation Consultant          ➜ Enterprise Guide (Section 4) + Technical Runbook
+🔧 DevOps / SRE (Execution)            ➜ Technical Runbook (all sections)
+🚨 Incident Responder (Rollback)       ➜ Technical Runbook (Section 8)
+
+PLANNING PHASE                         ➜ Enterprise Guide
+CUSTOMER DEMO                          ➜ Enterprise Guide (Sections 1-2)
+ARCHITECTURE DESIGN                    ➜ Enterprise Guide (Section 3)
+HANDS-ON EXECUTION                     ➜ Technical Runbook
+TROUBLESHOOTING                        ➜ Technical Runbook (Appendix B)
+```
+
+---
+
+## 📋 Document Comparison
+
+| Aspect | 📗 Enterprise Guide | 📘 Technical Runbook |
+|--------|---------------------|----------------------|
+| **Purpose** | Simplified conceptual guide | Detailed execution playbook |
+| **Focus** | WHY and WHAT (business value, architecture) | HOW (step-by-step commands) |
+| **Audience** | Executives, Architects, Sales | DevOps, SREs, Implementation |
+| **Structure** | By role (7 sections) | By phase (10 sections) |
+| **Detail Level** | High-level, business-focused | Command-level, technical |
+| **Length** | ~3600 lines (digestible sections) | ~2500 lines (comprehensive) |
+| **Commands** | Conceptual examples | Complete CLI commands |
+| **Configs** | Explained at high level | Full configuration files |
+| **Use Case** | Planning, demos, architecture | Execution, operations |
+
+---
 
 ## Overview
 
-This runbook provides detailed, step-by-step guidance for executing a near-zero downtime migration with no data loss, preserving topic configurations, consumer offsets, and ordering guarantees.
+This migration guide provides detailed, step-by-step guidance for executing a near-zero downtime migration with no data loss, preserving topic configurations, consumer offsets, and ordering guarantees.
 
 ## Key Features
 
@@ -14,11 +115,11 @@ This runbook provides detailed, step-by-step guidance for executing a near-zero 
 - **Complete CLI Examples**: Real Confluent CLI and Apache Kafka commands throughout
 - **Production-Ready**: Validation scripts, monitoring setup, rollback procedures
 
-## Contents
+## 📋 What's Included
 
-### 📋 [View Full Runbook](confluent-migration-runbook.md)
+### 📘 Technical Runbook - [View Document](confluent-migration-runbook.md)
 
-The runbook includes:
+**10 comprehensive sections** for hands-on implementation:
 
 1. **Pre-Migration Assessment** - Inventory, capacity planning, risk assessment
 2. **Architecture Design** - Multi-zone considerations, replication factor, latency impact
@@ -30,6 +131,22 @@ The runbook includes:
 8. **Rollback Plan** - Clear triggers and recovery procedures
 9. **Post-Migration** - Optimization, monitoring, cost management
 10. **Common Pitfalls & Best Practices** - Lessons learned and troubleshooting
+
+---
+
+### 📗 Enterprise Guide - [View Document](ENTERPRISE-GUIDE.md)
+
+**7 role-based sections** for planning and architecture:
+
+1. **Executive Summary** - Business drivers, ROI, target outcomes
+2. **Solution Engineer View** - Customer demos, objection handling, talking points
+3. **Solution Architect View** - Architecture design, networking, security, cost modeling
+4. **Implementation Consultant View** - High-level execution approach, checklists
+5. **Function Flow Explanation** - Data flow, replication mechanics, offset handling
+6. **Troubleshooting Guide** - Common failures and resolutions
+7. **Best Practices** - Zero-downtime tips, monitoring, optimization
+
+---
 
 ## Use Cases
 

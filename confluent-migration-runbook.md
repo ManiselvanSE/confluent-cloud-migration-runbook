@@ -7,6 +7,227 @@
 
 ---
 
+## 📘 About This Document
+
+### Purpose
+
+This **Technical Migration Runbook** is a **comprehensive, command-level execution guide** for migrating Confluent Cloud clusters from Single-Zone Dedicated to Multi-Zone Enterprise using Cluster Linking.
+
+**What This Document Provides:**
+- ✅ **Detailed step-by-step procedures** with actual CLI commands
+- ✅ **Complete configuration examples** (broker configs, cluster link properties)
+- ✅ **Validation commands** after each step
+- ✅ **Troubleshooting procedures** with root cause analysis
+- ✅ **Rollback scripts** and emergency procedures
+- ✅ **Appendices** with command references and timelines
+
+**Document Type**: Technical Reference | Execution Playbook | Operations Manual
+
+---
+
+### How This Document Differs from the Enterprise Guide
+
+**This repository contains TWO complementary documents:**
+
+| Document | Purpose | Audience | Structure | Use When |
+|----------|---------|----------|-----------|----------|
+| **📘 Technical Runbook** (this doc) | Detailed execution guide with commands | DevOps, SREs, Implementation Teams | **Chronological by migration phase** (10 sections) | Executing the migration hands-on |
+| **📗 Enterprise Guide** (`ENTERPRISE-GUIDE.md`) | Simplified conceptual guide | Executives, Sales, Architects | **Organized by role/perspective** (7 sections) | Planning, demos, architecture design |
+
+**Quick Selection Guide:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              WHICH DOCUMENT SHOULD I READ?                   │
+└─────────────────────────────────────────────────────────────┘
+
+IF YOU ARE...                          THEN READ...
+────────────────────────────────────────────────────────────────
+👨‍💼 Executive / Decision-Maker         ➜ Enterprise Guide (Section 1)
+👨‍💻 Solution Engineer (Pre-Sales)      ➜ Enterprise Guide (Section 2)
+🏗️ Solution Architect (Design)         ➜ Enterprise Guide (Section 3)
+👨‍🔧 Implementation Consultant          ➜ THIS RUNBOOK + Enterprise Guide (Section 4)
+🔧 DevOps / SRE (Execution)            ➜ THIS RUNBOOK (primary reference)
+🚨 Incident Responder (Rollback)       ➜ THIS RUNBOOK (Section 8)
+
+PLANNING PHASE                         ➜ Enterprise Guide (all sections)
+EXECUTION PHASE                        ➜ THIS RUNBOOK (follow sequentially)
+TROUBLESHOOTING                        ➜ THIS RUNBOOK (Appendix B)
+```
+
+---
+
+### Document Structure
+
+This runbook is organized **chronologically by migration phase** (not by role):
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│               RUNBOOK STRUCTURE (10 SECTIONS)                │
+└─────────────────────────────────────────────────────────────┘
+
+Section 1  │ PRE-MIGRATION ASSESSMENT
+Phase      │ • Topic inventory (commands, scripts)
+Week 1-2   │ • Producer/consumer analysis
+           │ • Dependency mapping (Schema Registry, Connect, ksqlDB)
+           │ • Security audit (ACLs, API keys)
+           │ • Risk assessment
+           │
+Section 2  │ ARCHITECTURE DESIGN
+Phase      │ • Multi-zone architecture specs
+Week 3     │ • Replication factor strategy
+           │ • Networking design (VPC peering/PrivateLink)
+           │ • Security architecture
+           │
+Section 3  │ TARGET CLUSTER SETUP
+Phase      │ • Provision Multi-AZ cluster (CLI commands)
+Week 4     │ • Configure networking (step-by-step)
+           │ • Create service accounts and API keys
+           │ • Replicate ACLs/RBAC
+           │
+Section 4  │ CLUSTER LINKING IMPLEMENTATION ⭐
+Phase      │ • Create Cluster Link (config files, commands)
+Week 4-5   │ • Create mirror topics (automation scripts)
+           │ • Monitor replication lag (monitoring commands)
+           │ • Enable offset sync (configuration)
+           │
+Section 5  │ APPLICATION MIGRATION
+Phase      │ • Producer cutover (phased rollout commands)
+Week 6     │ • Consumer migration (offset validation)
+           │ • Kafka Connect reconfiguration
+           │ • ksqlDB migration (if applicable)
+           │
+Section 6  │ CUTOVER STRATEGY ⭐
+Phase      │ • Minute-by-minute cutover timeline
+Week 6     │ • Step-by-step traffic switch plan
+           │ • Validation checklist (before/after)
+           │ • In-flight message handling
+           │
+Section 7  │ VALIDATION & TESTING
+Phase      │ • Data integrity validation (scripts)
+Week 6-8   │ • Consumer lag validation
+           │ • Performance benchmarking (commands)
+           │ • Failover testing procedures
+           │
+Section 8  │ ROLLBACK PLAN ⭐
+On-Demand  │ • Rollback triggers (when to revert)
+           │ • Step-by-step rollback procedure (<15 min)
+           │ • Data divergence handling
+           │
+Section 9  │ POST-MIGRATION TASKS
+Phase      │ • Decommission source cluster
+Week 10    │ • Performance tuning (configs)
+           │ • Monitoring setup (alert rules)
+           │ • Cost optimization (strategies)
+           │
+Section 10 │ COMMON PITFALLS & BEST PRACTICES
+Reference  │ • Top issues and resolutions
+           │ • Network configuration problems
+           │ • Under-partitioned topics
+           │ • Best practices summary
+           │
+APPENDICES │ • Appendix A: Command Reference (Confluent CLI, Kafka CLI)
+           │ • Appendix B: Troubleshooting Guide (failure scenarios)
+           │ • Appendix C: Migration Timeline Template
+```
+
+---
+
+### Who Should Use This Runbook
+
+**Primary Audience**: 👨‍🔧 **Implementation Teams** (DevOps, SREs, Platform Engineers)
+
+**How to Use**:
+
+1. **Pre-Migration Planning** (Weeks 1-3):
+   - Read Sections 1-2 to understand requirements
+   - Execute inventory scripts (Section 1)
+   - Design architecture (Section 2)
+
+2. **Staging Rehearsal** (Week 3):
+   - Execute Sections 3-7 in staging environment
+   - Document timing and issues
+   - Refine procedures
+
+3. **Production Execution** (Weeks 4-6):
+   - Follow Sections 3-7 sequentially
+   - Use Section 6 cutover timeline minute-by-minute
+   - Keep Section 8 (Rollback) ready
+
+4. **Post-Migration** (Weeks 6-10):
+   - Execute Section 7 (Validation)
+   - Execute Section 9 (Post-Migration Tasks)
+   - Reference Section 10 (Best Practices)
+
+5. **Emergency Rollback**:
+   - Jump directly to Section 8
+   - Execute rollback procedure
+   - Post-incident analysis
+
+---
+
+### Prerequisites
+
+Before using this runbook, ensure:
+
+**Technical Knowledge**:
+- ✅ Kafka fundamentals (topics, partitions, offsets, consumer groups)
+- ✅ Confluent Cloud console navigation
+- ✅ CLI proficiency (Bash scripting, Confluent CLI, Kafka CLI)
+- ✅ (Optional) Kubernetes basics (if deploying containerized apps)
+
+**Access & Tools**:
+- ✅ Confluent Cloud admin access (create clusters, API keys)
+- ✅ Cloud provider access (AWS/Azure/GCP for networking)
+- ✅ Confluent CLI installed (`confluent --version`)
+- ✅ Apache Kafka CLI tools installed (`kafka-topics --version`)
+
+**Environment**:
+- ✅ Source cluster: Confluent Cloud Dedicated (Single-AZ)
+- ✅ Network connectivity planned (VPC peering or PrivateLink)
+- ✅ Staging environment available for rehearsal
+
+---
+
+### Related Documents
+
+**Companion Document**: 📗 **Enterprise Guide** (`ENTERPRISE-GUIDE.md`)
+- For executives, architects, and pre-sales teams
+- Simplified explanations organized by role
+- Business case, conceptual architecture, best practices
+
+**External Resources**:
+- [Confluent Cluster Linking Documentation](https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/)
+- [Confluent Cloud Multi-Zone Clusters](https://docs.confluent.io/cloud/current/clusters/cluster-types.html)
+- [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+
+---
+
+### Document Conventions
+
+**Command Notation**:
+```bash
+# Comments explain what the command does
+command --flag <placeholder>
+
+# Placeholders to replace with your values:
+<cluster-id>           # Your Confluent cluster ID (e.g., lkc-abc123)
+<bootstrap-server>     # Bootstrap server URL
+<api-key>              # Your API key
+<api-secret>           # Your API secret (keep secure!)
+```
+
+**Configuration Files**:
+- Files ending in `.sample` are templates (remove `.sample` after customization)
+- Never commit actual credentials to version control
+
+**Validation Steps**:
+- ✅ = Expected successful outcome
+- ❌ = Failure state requiring troubleshooting
+- ⚠️ = Warning or important note
+
+---
+
 ## Migration Overview & Agenda
 
 ### Executive Summary

@@ -5,6 +5,72 @@
 
 ## 📚 Document Overview & Navigation
 
+### About This Document
+
+This **Enterprise Guide** is a **simplified, role-based explanation** of Confluent Cloud migration from Single-Zone Dedicated to Multi-Zone Enterprise clusters. It translates technical complexity into digestible perspectives for executives, solution engineers, architects, and implementation teams.
+
+**What This Document Provides:**
+- ✅ **Business case and ROI** for executives and decision-makers
+- ✅ **Conceptual architecture** without overwhelming technical detail
+- ✅ **Customer discussion points** for solution engineers
+- ✅ **Design considerations** for architects
+- ✅ **High-level execution approach** for implementation teams
+- ✅ **Visual diagrams and flow explanations**
+
+**Document Type**: Executive Summary | Sales Enablement | Architecture Overview
+
+---
+
+### How This Document Differs from the Technical Runbook
+
+**This repository contains TWO complementary documents:**
+
+| Document | Purpose | Audience | Structure | Detail Level |
+|----------|---------|----------|-----------|--------------|
+| **📗 Enterprise Guide** (this doc) | Simplified conceptual guide | Executives, Sales, Architects | **Organized by role/perspective** (7 sections) | High-level, business-focused |
+| **📘 Technical Runbook** (`confluent-migration-runbook.md`) | Detailed execution guide | DevOps, SREs, Implementation | **Chronological by phase** (10 sections) | Command-level, technical |
+
+**Key Differences:**
+
+| Aspect | Enterprise Guide | Technical Runbook |
+|--------|------------------|-------------------|
+| **Focus** | WHY and WHAT (concepts) | HOW (execution) |
+| **Commands** | Conceptual examples | Complete CLI commands with flags |
+| **Configs** | High-level explanation | Full configuration files |
+| **Length** | Shorter, digestible sections | Comprehensive, 2500+ lines |
+| **Use Case** | Planning, demos, architecture | Hands-on execution, operations |
+| **Tone** | Business-friendly | Technical, prescriptive |
+
+**Quick Selection Guide:**
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│              WHICH DOCUMENT SHOULD I READ?                   │
+└─────────────────────────────────────────────────────────────┘
+
+IF YOU ARE...                          THEN READ...
+────────────────────────────────────────────────────────────────
+👨‍💼 Executive / Decision-Maker         ➜ THIS GUIDE (Section 1)
+👨‍💻 Solution Engineer (Pre-Sales)      ➜ THIS GUIDE (Section 2)
+🏗️ Solution Architect (Design)         ➜ THIS GUIDE (Section 3)
+👨‍🔧 Implementation Consultant          ➜ THIS GUIDE (Section 4) + Technical Runbook
+🔧 DevOps / SRE (Execution)            ➜ Technical Runbook (primary)
+🚨 Incident Responder (Rollback)       ➜ Technical Runbook (Section 8)
+
+PLANNING PHASE                         ➜ THIS GUIDE (all sections)
+DEMO / PRESENTATION                    ➜ THIS GUIDE (Sections 1-2)
+ARCHITECTURE DESIGN                    ➜ THIS GUIDE (Section 3)
+EXECUTION PHASE                        ➜ Technical Runbook
+TROUBLESHOOTING                        ➜ Technical Runbook (Appendix B)
+```
+
+**When to Use Both Documents Together:**
+- **Implementation Consultants**: Read this guide for context, then use Technical Runbook for execution
+- **Architects**: Read Section 3 here for design, then Technical Runbook Section 2 for detailed specs
+- **Executives**: Read Section 1 here for business case, have technical team reference Runbook
+
+---
+
 ### Purpose of This Guide
 
 This **Enterprise Guide** provides role-specific perspectives on migrating from **Single-Zone Confluent Cloud Dedicated** to **Multi-Zone Enterprise** clusters using Cluster Linking. Unlike the detailed technical runbook, this guide simplifies complex concepts for three distinct audiences.
