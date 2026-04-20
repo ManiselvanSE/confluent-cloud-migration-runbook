@@ -3,6 +3,309 @@
 
 ---
 
+## 📚 Document Overview & Navigation
+
+### Purpose of This Guide
+
+This **Enterprise Guide** provides role-specific perspectives on migrating from **Single-Zone Confluent Cloud Dedicated** to **Multi-Zone Enterprise** clusters using Cluster Linking. Unlike the detailed technical runbook, this guide simplifies complex concepts for three distinct audiences.
+
+**What You'll Learn:**
+- **Business value** and ROI of multi-zone migration
+- **Conceptual architecture** and design considerations
+- **Step-by-step execution** approach for implementation teams
+- **Data flow** during migration
+- **Troubleshooting** common issues
+- **Best practices** for production migrations
+
+---
+
+### Document Structure & Audience Guide
+
+This guide is organized into **7 major sections**, each serving a specific purpose:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    DOCUMENT ROADMAP                          │
+└─────────────────────────────────────────────────────────────┘
+
+Section 1  │ EXECUTIVE SUMMARY
+👨‍💼         │ • What is Confluent Cloud migration?
+Executives │ • Why organizations migrate (business & technical drivers)
+5-10 min   │ • Systems involved (Kafka, Schema Registry, Connect)
+           │ • Target state architecture and outcomes
+           │ ➜ Use for: Business case presentations, executive briefings
+
+Section 2  │ SOLUTION ENGINEER VIEW (CONCEPTUAL DESIGN)
+👨‍💻         │ • Current state vs. target state architecture
+Sales/SE   │ • High-level migration approach (Cluster Linking)
+15-20 min  │ • Key components and data flow
+           │ • Risks, constraints, and customer talking points
+           │ ➜ Use for: Customer demos, discovery calls, pre-sales
+
+Section 3  │ SOLUTION ARCHITECT VIEW (DETAILED DESIGN)
+🏗️         │ • Architecture design (single-AZ → multi-AZ)
+Architects │ • Migration strategy and component ordering
+30-45 min  │ • Data consistency and offset handling
+           │ • Risk management and rollback strategies
+           │ ➜ Use for: Technical deep-dives, architecture reviews
+
+Section 4  │ IMPLEMENTATION CONSULTANT VIEW (STEP-BY-STEP)
+👨‍🔧         │ • Phase 1: Pre-migration setup
+DevOps/SRE │ • Phase 2: Infrastructure preparation
+1-2 hours  │ • Phase 3: Migration execution (cutover timeline)
+           │ • Phase 4: Post-migration validation
+           │ ➜ Use for: Hands-on implementation, execution planning
+
+Section 5  │ FUNCTION FLOW EXPLANATION
+🔄         │ • How data moves during migration
+Technical  │ • How replication works (Cluster Linking internals)
+20-30 min  │ • How offsets are preserved
+           │ • Cutover traffic switch sequence
+           │ ➜ Use for: Understanding migration mechanics
+
+Section 6  │ TROUBLESHOOTING GUIDE
+🚨         │ • Common migration failures
+On-Demand  │ • Connectivity and offset issues
+           │ • Schema and connector problems
+           │ • Rollback scenarios
+           │ ➜ Use for: Issue resolution during migration
+
+Section 7  │ BEST PRACTICES
+⭐         │ • Zero-downtime migration tips
+Reference  │ • Monitoring and version alignment
+           │ • Security and cost optimization
+           │ ➜ Use for: Planning and optimization guidance
+```
+
+---
+
+### Quick Navigation by Role
+
+#### **For Executives & Decision-Makers**
+**Goal**: Understand business value and investment required
+
+📖 **Read These Sections**:
+1. Executive Summary (Section 1) → Business case, outcomes
+2. Solution Engineer View (Section 2) → Migration approach overview
+
+⏱️ **Time Required**: 15 minutes
+
+🎯 **Key Takeaways**:
+- 99.99% uptime capability (vs. 99.5% current)
+- <5 minute downtime during migration
+- 30-40% cost increase (quantified ROI)
+- 10-week timeline
+
+---
+
+#### **For Solution Engineers & Pre-Sales**
+**Goal**: Demo migration approach and handle customer objections
+
+📖 **Read These Sections**:
+1. Executive Summary (Section 1) → Business drivers
+2. Solution Engineer View (Section 2) → **PRIMARY FOCUS**
+   - Current vs. target state diagrams
+   - Migration timeline and approach
+   - Customer talking points
+   - Objection handling
+3. Best Practices (Section 7) → Recommendations for customers
+
+⏱️ **Time Required**: 30 minutes
+
+🎯 **Key Deliverables**:
+- 15-minute customer demo script
+- Business value proposition
+- Risk mitigation talking points
+- Next-step recommendations
+
+---
+
+#### **For Solution Architects**
+**Goal**: Design target architecture and migration strategy
+
+📖 **Read These Sections**:
+1. Solution Architect View (Section 3) → **PRIMARY FOCUS**
+   - Architecture design (single-AZ → multi-AZ)
+   - Networking (VPC peering vs. PrivateLink)
+   - Security architecture
+   - Performance and cost modeling
+2. Function Flow (Section 5) → Data flow mechanics
+3. Best Practices (Section 7) → Design best practices
+
+⏱️ **Time Required**: 1 hour
+
+🎯 **Key Deliverables**:
+- Target architecture diagram
+- Network and security design
+- Capacity and cost estimates
+- Risk assessment
+
+---
+
+#### **For Implementation Consultants & DevOps Teams**
+**Goal**: Execute migration with minimal risk and downtime
+
+📖 **Read These Sections**:
+1. Implementation Consultant View (Section 4) → **PRIMARY FOCUS**
+   - Pre-migration preparation
+   - Step-by-step cutover procedure
+   - Validation checklists
+   - Command examples
+2. Function Flow (Section 5) → Understand migration mechanics
+3. Troubleshooting (Section 6) → Issue resolution
+4. Best Practices (Section 7) → Operational guidance
+
+⏱️ **Time Required**: 2 hours (first read), then use as reference
+
+🎯 **Key Deliverables**:
+- Execution runbook
+- Pre-cutover checklist
+- Rollback plan
+- Validation procedures
+
+---
+
+### Migration Timeline Overview
+
+**Total Duration**: ~10 weeks (typical for 100TB cluster, 500 topics)
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                  10-WEEK MIGRATION TIMELINE                  │
+└─────────────────────────────────────────────────────────────┘
+
+Week 1-2   ║ PRE-MIGRATION ASSESSMENT
+           ║ • Inventory topics, consumers, connectors
+           ║ • Analyze traffic patterns
+           ║ • Risk assessment and capacity planning
+           ║ Deliverable: Inventory spreadsheet, risk report
+           ║
+Week 3     ║ ARCHITECTURE DESIGN & STAGING REHEARSAL
+           ║ • Design multi-zone architecture
+           ║ • Network setup (VPC peering/PrivateLink)
+           ║ • Execute staging migration
+           ║ Deliverable: Architecture diagrams, staging validation
+           ║
+Week 4     ║ TARGET CLUSTER PROVISIONING
+           ║ • Provision Multi-AZ Enterprise cluster
+           ║ • Configure networking and security
+           ║ • Create service accounts and API keys
+           ║ Deliverable: Operational destination cluster
+           ║
+Week 4-5   ║ CLUSTER LINKING & REPLICATION SYNC
+           ║ • Establish Cluster Link (source → destination)
+           ║ • Create mirror topics
+           ║ • Wait for replication lag → 0
+           ║ Deliverable: Fully synchronized mirror topics
+           ║ Cutover Readiness: Lag < 1000 messages (all topics)
+           ║
+Week 6     ║ PRODUCTION CUTOVER (4-hour window)
+🚀         ║ • Producer migration (rolling, 0 downtime)
+CRITICAL   ║ • Consumer migration (<5 min downtime)
+           ║ • Kafka Connect reconfiguration
+           ║ Deliverable: All traffic on destination cluster
+           ║
+Week 6-8   ║ VALIDATION & MONITORING
+           ║ • 24/7 monitoring period
+           ║ • Data integrity validation
+           ║ • Performance tuning
+           ║ Deliverable: Validated production cluster
+           ║
+Week 10    ║ DECOMMISSION
+           ║ • Delete Cluster Link
+           ║ • Delete source cluster
+           ║ • Cost optimization
+           ║ Deliverable: Optimized multi-zone cluster
+```
+
+---
+
+### Key Migration Metrics
+
+| Metric | Target | Actual (Typical) | Notes |
+|--------|--------|------------------|-------|
+| **Total Duration** | 10 weeks | 8-12 weeks | Varies with cluster size |
+| **Cutover Window** | 4 hours | 4 hours | Scheduled low-traffic period |
+| **Producer Downtime** | 0 minutes | 0 minutes | Rolling restart |
+| **Consumer Downtime** | <5 minutes | 3-5 minutes | Restart with offset translation |
+| **Data Loss** | 0 messages | 0 messages | Cluster Linking guarantees |
+| **Replication Sync** | 5-7 days | 5-7 days | For 100TB cluster |
+| **Cost Increase** | 30-40% | 30-40% | RF=3, cross-zone bandwidth |
+
+---
+
+### Migration Success Criteria
+
+Before declaring migration complete, validate:
+
+✅ **Data Integrity**
+- Message counts match (source vs. destination)
+- Consumer offsets correctly translated
+- No reprocessing or message loss
+
+✅ **Application Health**
+- All producers writing to destination
+- All consumers reading from destination
+- Kafka Connect connectors in RUNNING state
+- ksqlDB queries operational
+
+✅ **Performance Baseline**
+- Producer throughput ≥ baseline
+- Consumer lag < 5000 messages
+- End-to-end latency < 1s (acceptable for multi-zone)
+- Error rates < 0.01%
+
+✅ **Operational Readiness**
+- Monitoring dashboards updated
+- Alerts configured for multi-zone cluster
+- Runbooks updated with new architecture
+- Team trained on multi-zone operations
+
+✅ **Business Validation**
+- 7-14 days stable operation
+- Zero critical incidents
+- Business stakeholder sign-off
+- Compliance requirements met
+
+---
+
+### How to Use This Document
+
+#### **First-Time Reader**
+1. Start with your role's recommended sections (see "Quick Navigation by Role" above)
+2. Skim other sections to understand full picture
+3. Bookmark for reference during migration
+
+#### **Pre-Migration Planning**
+- Read Section 1 (Executive Summary) for business case
+- Read Section 3 (Solution Architect) for design
+- Use Section 4 (Implementation) to build project plan
+
+#### **During Migration Execution**
+- Follow Section 4 (Implementation) step-by-step
+- Reference Section 6 (Troubleshooting) for issues
+- Consult Section 5 (Function Flow) to understand behavior
+
+#### **Post-Migration**
+- Review Section 7 (Best Practices) for optimization
+- Use migration timeline as template for future migrations
+- Document lessons learned
+
+---
+
+### Related Resources
+
+**Companion Documents**:
+- **Technical Runbook** (`confluent-migration-runbook.md`) → Detailed 2000+ line execution guide
+- **Role-Based View** (`docs/role-based-view.md`) → Alternative perspective document
+
+**External Resources**:
+- [Confluent Cluster Linking Documentation](https://docs.confluent.io/cloud/current/multi-cloud/cluster-linking/)
+- [Confluent Cloud Multi-Zone Architecture](https://docs.confluent.io/cloud/current/clusters/cluster-types.html)
+- [Apache Kafka Documentation](https://kafka.apache.org/documentation/)
+
+---
+
 # 1. EXECUTIVE SUMMARY
 
 ## What is Confluent Cloud Migration?
